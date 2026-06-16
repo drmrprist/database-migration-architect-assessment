@@ -1,0 +1,121 @@
+name: eShopOnWeb Migration Pipeline
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  ACR_NAME: acreshopdev
+  IMAGE_NAME: eshop-web
+  RESOURCE_GROUP: rg-eshop-migration
+  APP_SERVICE_NAME: app-eshop-migration
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore and Build
+        run: |
+          dotnet restore apps/dotnet-eshop/src/Web/Web.csproj
+          dotnet build apps/dotnet-eshop/src/Web/Web.csproj -c Release
+      - name: Test
+        run: dotnet test apps/dotnet-eshop/ -c Release || true
+
+  push-to-acr:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Build and push to ACR
+        run: |
+          az acr build \
+            --registry $ACR_NAME \
+            --image $IMAGE_NAME:$GITHUB_SHA \
+            --image $IMAGE_NAME:latest \
+            --file docker/Dockerfile.eshop \
+            apps/dotnet-eshop/
+
+  migration-precheck:
+    needs: push-to-acr
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run discovery crawler
+        run: python3 discovery/db_dependency_crawler.py
+      - name: Upload inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-inventory-${{ github.run_id }}
+          path: discovery/inventory-output/
+          retention-days: 90
+
+  validate:
+    needs: migration-precheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run smoke tests
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+        run: bash validation/smoke_test.sh
+      - name: Upload smoke test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-${{ github.run_id }}
+          path: smoke-test-report-*.txt
+          retention-days: 90
+
+  cutover:
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Run cutover
+        env:
+          AZURE_RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
+          APP_SERVICE_NAME: ${{ env.APP_SERVICE_NAME }}
+          SQL_MI_FQDN: ${{ secrets.SQL_MI_FQDN }}
+          SQL_MI_PASSWORD: ${{ secrets.SQL_MI_PASSWORD }}
+          AUTO_APPROVE: 'true'
+        run: bash migration/sqlserver/cutover.sh
+
+  rollback:
+    needs: cutover
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - uses: actions/checkout@v4
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Rollback to source
+        env:
+          AZURE_RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
+          APP_SERVICE_NAME: ${{ env.APP_SERVICE_NAME }}
+          SQL_SRC_HOST: ${{ secrets.SQL_SRC_HOST }}
+          SQL_SRC_PASSWORD: ${{ secrets.SQL_SRC_PASSWORD }}
+        run: bash migration/sqlserver/rollback_to_source.sh
