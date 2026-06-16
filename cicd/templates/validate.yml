@@ -1,0 +1,30 @@
+name: Reusable Validation
+
+on:
+  workflow_call:
+    inputs:
+      app-url:
+        required: true
+        type: string
+    secrets:
+      SQL_MI_PASSWORD:
+        required: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run smoke tests
+        env:
+          APP_URL: ${{ inputs.app-url }}
+        run: bash validation/smoke_test.sh
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-report-${{ github.run_id }}
+          path: smoke-test-report-*.txt
+          retention-days: 90

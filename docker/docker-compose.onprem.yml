@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  sqlserver-onprem:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    container_name: sqlserver-source
+    environment:
+      ACCEPT_EULA: 'Y'
+      MSSQL_SA_PASSWORD: '${SQL_SRC_PASSWORD:-SourceDB@12345}'
+      MSSQL_PID: 'Developer'
+    ports:
+      - '1433:1433'
+    healthcheck:
+      test: ['CMD', '/opt/mssql-tools18/bin/sqlcmd', '-S', 'localhost', '-U', 'sa', '-P', 'SourceDB@12345', '-C', '-Q', 'SELECT 1']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - onprem-net
+
+  eshop-app:
+    build:
+      context: ../apps/dotnet-eshop
+      dockerfile: ../../docker/Dockerfile.eshop
+    container_name: eshop-web-azure
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__CatalogConnection: 'Server=sqlserver-onprem,1433;Database=Microsoft.eShopOnWeb.CatalogDb;User Id=sa;Password=SourceDB@12345;TrustServerCertificate=True;'
+      ConnectionStrings__IdentityConnection: 'Server=sqlserver-onprem,1433;Database=Microsoft.eShopOnWeb.Identity;User Id=sa;Password=SourceDB@12345;TrustServerCertificate=True;'
+    ports:
+      - '8080:8080'
+    depends_on:
+      sqlserver-onprem:
+        condition: service_healthy
+    networks:
+      - onprem-net
+
+  nginx-ingress:
+    image: nginx:alpine
+    container_name: nginx-ingress
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - eshop-app
+    networks:
+      - onprem-net
+
+networks:
+  onprem-net:
+    driver: bridge
