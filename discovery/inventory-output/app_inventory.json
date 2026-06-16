@@ -1,0 +1,256 @@
+{
+  "scan_time": "2026-06-16T21:48:12.087017",
+  "findings": [
+    {
+      "file": "./docker/docker-compose.onprem.yml",
+      "pattern": "mssql_connstr",
+      "matches": [
+        [
+          "sqlserver-onprem,1433",
+          "Microsoft.eShopOnWeb.CatalogDb"
+        ],
+        [
+          "sqlserver-onprem,1433",
+          "Microsoft.eShopOnWeb.Identity"
+        ]
+      ]
+    },
+    {
+      "file": "./docker/docker-compose.onprem.yml",
+      "pattern": "docker_service",
+      "matches": [
+        "mcr.microsoft.com/mssql"
+      ]
+    },
+    {
+      "file": "./discovery/db_dependency_crawler.py",
+      "pattern": "mssql_connstr",
+      "matches": [
+        [
+          "([^",
+          "([^"
+        ]
+      ]
+    },
+    {
+      "file": "./discovery/db_dependency_crawler.py",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext",
+        "DbSet",
+        "OnConfiguring"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/docker-compose.yml",
+      "pattern": "docker_service",
+      "matches": [
+        "mcr.microsoft.com/mssql"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/tests/FunctionalTests/Web/WebTestFixture.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext",
+        "DbContext",
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/tests/FunctionalTests/PublicApi/ApiTestFixture.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext",
+        "DbContext",
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/tests/IntegrationTests/Repositories/OrderRepositoryTests/GetByIdWithItemsAsync.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/tests/IntegrationTests/Repositories/OrderRepositoryTests/GetById.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/tests/IntegrationTests/Repositories/BasketRepositoryTests/SetQuantities.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Web/appsettings.json",
+      "pattern": "mssql_connstr",
+      "matches": [
+        [
+          "localhost,1433",
+          "Microsoft.eShopOnWeb.CatalogDb"
+        ],
+        [
+          "localhost,1433",
+          "Microsoft.eShopOnWeb.Identity"
+        ]
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Web/Program.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Web/Extensions/ServiceCollectionExtensions.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext",
+        "UseSqlServer",
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Web/Extensions/WebApplicationExtensions.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext",
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/PublicApi/Program.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/PublicApi/Extensions/WebApplicationExtensions.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext",
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Dependencies.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext",
+        "DbContext",
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Identity/AppIdentityDbContextSeed.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext",
+        "DbContext",
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Identity/AppIdentityDbContext.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext",
+        "DbContext",
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Identity/Migrations/AppIdentityDbContextModelSnapshot.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext",
+        "DbContext",
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Identity/Migrations/20201202111612_InitialIdentityModel.Designer.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext",
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Data/EfRepository.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "dbContext",
+        "dbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Data/CatalogContext.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext",
+        "DbContext",
+        "DbSet"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Data/Migrations/20201202111507_InitialModel.Designer.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Data/Migrations/20211026175614_FixBuyerId.Designer.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Data/Migrations/20211231093753_FixShipToAddress.Designer.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Data/Migrations/20250310153034_Updates.Designer.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Data/Migrations/CatalogContextModelSnapshot.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Data/Migrations/20250207163746_MissingMigration20250207.Designer.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "DbContext"
+      ]
+    },
+    {
+      "file": "./apps/dotnet-eshop/eShopOnWeb/src/Infrastructure/Data/Queries/BasketQueryService.cs",
+      "pattern": "ef_context",
+      "matches": [
+        "dbContext",
+        "dbContext",
+        "dbContext"
+      ]
+    }
+  ]
+}
