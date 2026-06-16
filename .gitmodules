@@ -1,0 +1,3 @@
+[submodule "apps/dotnet-eshop/eShopOnWeb"]
+	path = apps/dotnet-eshop/eShopOnWeb
+	url = https://github.com/drmrprist/eShopOnWeb.git
