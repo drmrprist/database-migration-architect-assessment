@@ -25,8 +25,8 @@ jobs:
           dotnet-version: 8.0.x
       - name: Restore and Build
         run: |
-          dotnet restore apps/dotnet-eshop/eShopOnWeb/eShopOnWeb/src/Web/Web.csproj
-          dotnet build apps/dotnet-eshop/eShopOnWeb/eShopOnWeb/src/Web/Web.csproj -c Release
+          dotnet restore apps/dotnet-eshop/eShopOnWeb/src/Web/Web.csproj
+          dotnet build apps/dotnet-eshop/eShopOnWeb/src/Web/Web.csproj -c Release
       - name: Test
         run: dotnet test apps/dotnet-eshop/eShopOnWeb/ -c Release || true
 
