@@ -1,0 +1,19 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+WORKDIR /src
+COPY src/Web/Web.csproj src/Web/
+COPY src/Core/Core.csproj src/Core/
+COPY src/Infrastructure/Infrastructure.csproj src/Infrastructure/
+RUN dotnet restore src/Web/Web.csproj
+COPY . .
+RUN dotnet publish src/Web/Web.csproj -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
+RUN adduser -D -u 1000 eshopuser
+WORKDIR /app
+COPY --from=build /app/publish .
+RUN chown -R eshopuser:eshopuser /app
+USER eshopuser
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD wget -qO- http://localhost:8080/health || exit 1
+ENTRYPOINT ["dotnet", "Web.dll"]
