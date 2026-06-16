@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
@@ -35,6 +37,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: Azure login
         uses: azure/login@v2
         with:
@@ -55,6 +59,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -72,6 +78,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: Run smoke tests
         env:
           APP_URL: ${{ secrets.APP_URL }}
@@ -89,6 +97,8 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: Azure login
         uses: azure/login@v2
         with:
@@ -110,6 +120,8 @@ jobs:
     if: failure()
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: Azure login
         uses: azure/login@v2
         with:
